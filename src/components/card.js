@@ -1,12 +1,11 @@
-import {
-  templateCard,
-  popupImagePicture,
-  popupImageTitle} from "./constant.js";
-
-import { openPopup } from "./modal.js";
-
 // @todo: Функция создания карточки
-export function createCard(itemArr, funcDelete, funcLike) {
+export function createCard(
+  itemArr,
+  funcDelete,
+  funcLike,
+  funcOpenPopupPicture
+) {
+  const templateCard = document.querySelector("#card-template").content;
   const elementCard = templateCard
     .querySelector(".places__item")
     .cloneNode(true);
@@ -19,24 +18,9 @@ export function createCard(itemArr, funcDelete, funcLike) {
   imgElement.alt = itemArr.name;
   titleElement.textContent = itemArr.name;
 
-  imgElement.addEventListener("click", () => {
-    popupImagePicture.src = imgElement.src;
-    popupImageTitle.textContent = imgElement.alt;
-
-    openPopup("popup_type_image");
-  });
-
+  imgElement.addEventListener("click", () => funcOpenPopupPicture(imgElement));
   buttonDelete.addEventListener("click", funcDelete);
   buttonLike.addEventListener("click", funcLike);
 
   return elementCard;
-}
-
-// @todo: Функция удаления карточки
-export function deleteCard(evt) {
-  evt.target.closest(".places__item").remove();
-}
-
-export function likeCard(evt) {
-  evt.target.classList.toggle("card__like-button_is-active");
 }
