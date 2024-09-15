@@ -24,3 +24,11 @@ export function createCard(
 
   return elementCard;
 }
+
+export function deleteCard(evt) {
+  evt.target.closest(".places__item").remove();
+}
+
+export function likeCard(evt) {
+  evt.target.classList.toggle("card__like-button_is-active");
+}

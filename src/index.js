@@ -1,7 +1,9 @@
 import "./pages/index.css";
 
 import { initialCards } from "./components/constant.js";
-import { createCard } from "./components/card.js";
+import { createCard,
+  deleteCard,
+  likeCard } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
 
 // @todo: DOM узлы
@@ -26,14 +28,7 @@ function openPopupPicture(data) {
   openPopup(popupImage);
 }
 
-// @todo: Функция удаления карточки
-function deleteCard(evt) {
-  evt.target.closest(".places__item").remove();
-}
 
-function likeCard(evt) {
-  evt.target.classList.toggle("card__like-button_is-active");
-}
 
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
