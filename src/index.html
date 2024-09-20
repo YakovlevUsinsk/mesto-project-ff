@@ -37,9 +37,11 @@
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Редактировать профиль</h3>
-      <form class="popup__form" name="edit-profile">
-        <input type="text" name="name" class="popup__input popup__input_type_name" placeholder="Имя" required>
-        <input type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" required>
+      <form class="popup__form" name="edit-profile" novalidate>
+        <input id="name" pattern="[a-zа-яё\d\-\s]+" data-error-message="Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы." minlength="2" maxlength="40" type="text" name="name" class="popup__input popup__input_type_name" placeholder="Имя" required>
+        <span class="name-error"></span>
+        <input id="description" pattern="[a-zа-яё\d\-\s]+" data-error-message="Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы." minlength="2" maxlength="200" type="text" name="description" class="popup__input popup__input_type_description" placeholder="Занятие" required>
+        <span class="description-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>
@@ -48,9 +50,11 @@
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
-      <form class="popup__form" name="new-place">
-        <input type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
-        <input type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+      <form class="popup__form" name="new-place" novalidate>
+        <input id="place-name" pattern="[a-zа-яё\d\-\s]+" data-error-message="Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы." minlength="2" maxlength="30" type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
+        <span class="place-name-error"></span>
+        <input id="link" pattern="http[s]?:\/\/[\w.\/\-]+" data-error-message="В поле «Ссылка на картинку» должен быть URL" type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <span class="link-error"></span>
         <button type="submit" class="button popup__button">Сохранить</button>
       </form>
     </div>

@@ -1,10 +1,20 @@
 import "./pages/index.css";
+import {enabledValidation, clearValidation} from "./components/validation.js";
 
 import { initialCards } from "./components/constant.js";
 import { createCard,
   deleteCard,
   likeCard } from "./components/card.js";
 import { openPopup, closePopup } from "./components/modal.js";
+
+const configValidation = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}
 
 // @todo: DOM узлы
 const containerCard = document.querySelector(".places__list");
@@ -57,6 +67,7 @@ initialCards.forEach(function (item) {
 
 buttoAddCard.addEventListener("click", () => {
   formEditeImage.reset();
+  clearValidation(popupAdPicture, configValidation);
   openPopup(popupAdPicture);
 });
 
@@ -86,5 +97,9 @@ popupEditProfile.addEventListener("submit", handleProfileFormSubmit);
 buttoEditeProfile.addEventListener("click", () => {
   popupEditProfile["name"].value = profileName.textContent;
   popupEditProfile["description"].value = profileDescription.textContent;
+  clearValidation(popupEditProf, configValidation)
+
   openPopup(popupEditProf);
 });
+// test js 
+enabledValidation(configValidation);
