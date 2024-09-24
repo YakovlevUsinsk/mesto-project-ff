@@ -71,13 +71,34 @@ function handleCardFormSubmit(evt) {
 const dataItemCard = addCardServer(configApi, itemCard);
 
   Promise.all([prof, dataItemCard])
+    .then((res)=>{
+      const item = res[1];
+      const dataProfile = {name: res[0]["name"], about: res[0]["about"]}
+      const myId = res[0]["_id"];
+      return { item, dataProfile, myId };
+    })
     .then((data)=>{
-          const card = createCard(data[1],
-            {delete: ()=>{deleteCardServer(configApi, data[1]["_id"]);
+      const item = data.item;
+          const card = createCard(item,
+            {delete: ()=>{deleteCardServer(configApi, item["_id"]);
               deleteCard(card)}}, 
-              likeForCallback, 
+              ()=>{
+                if(checkLike(item.likes, data.myId)){
+                deleteLikeCardServer(configApi, item["_id"])
+                  .then((res)=>{
+                    item.likes = res.likes;
+                    isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
+                  })
+                } else {
+                  likeCardServer(configApi, item["_id"])
+                    .then((res)=>{
+                      item.likes = res.likes;
+                      isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
+                    })
+                }
+              },
               openPopupPicture, 
-              data[0]["_id"]);
+              data.myId);
   containerCard.prepend(card);
     })
   evt.target.reset();
@@ -137,7 +158,7 @@ Promise.all([prof, all])
     data.arrayCard.forEach((item) => {
       const card = createCard(item, 
         {delete: ()=>{
-        deleteLikeCardServer(configApi, item["_id"]);
+        deleteCardServer(configApi, item["_id"]);
         deleteCard(card)
       }}, 
       ()=>{
