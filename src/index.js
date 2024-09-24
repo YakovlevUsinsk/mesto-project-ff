@@ -1,20 +1,22 @@
 import "./pages/index.css";
-import { enabledValidation, 
-  clearValidation } from "./components/validation.js";
-import { allCard, 
-  dataGetProfile, 
-  editProfileServer, 
-  addCardServer, 
-  deleteCardServer, 
-  likeCardServer, 
-  deleteLikeCardServer } from "./components/api.js";
+import { enabledValidation, clearValidation } from "./components/validation.js";
+import {
+  allCard,
+  dataGetProfile,
+  editProfileServer,
+  addCardServer,
+  deleteCardServer,
+  likeCardServer,
+  deleteLikeCardServer,
+} from "./components/api.js";
 import { configApi } from "./components/constant.js";
-import { createCard, 
+import {
+  createCard,
   deleteCard,
   isLikeCard,
-checkLike} from "./components/card.js";
-import { openPopup, 
-  closePopup } from "./components/modal.js";
+  checkLike,
+} from "./components/card.js";
+import { openPopup, closePopup } from "./components/modal.js";
 
 const configValidation = {
   formSelector: ".popup__form",
@@ -51,56 +53,45 @@ function handleProfileFormSubmit(evt) {
   evt.preventDefault();
   const name = popupEditProfile["name"].value;
   const about = popupEditProfile["description"].value;
-  const data = {name, about};
-  editProfileServer(configApi, data)
-    .then((res)=>{
-      profileName.textContent = res.name;
-      profileDescription.textContent = res.about;
-    })
+  const data = { name, about };
+  editProfileServer(configApi, data).then((res) => {
+    profileName.textContent = res.name;
+    profileDescription.textContent = res.about;
+  });
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
 }
-
 
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
   const itemCard = {};
   itemCard.name = formEditeImage["place-name"].value;
   itemCard.link = formEditeImage["link"].value;
-//
-const dataItemCard = addCardServer(configApi, itemCard);
+  //
+  const dataItemCard = addCardServer(configApi, itemCard);
 
   Promise.all([prof, dataItemCard])
-    .then((res)=>{
+    .then((res) => {
       const item = res[1];
-      const dataProfile = {name: res[0]["name"], about: res[0]["about"]}
+      const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
       const myId = res[0]["_id"];
       return { item, dataProfile, myId };
     })
-    .then((data)=>{
+    .then((data) => {
       const item = data.item;
-          const card = createCard(item,
-            {delete: ()=>{deleteCardServer(configApi, item["_id"]);
-              deleteCard(card)}}, 
-              ()=>{
-                if(checkLike(item.likes, data.myId)){
-                deleteLikeCardServer(configApi, item["_id"])
-                  .then((res)=>{
-                    item.likes = res.likes;
-                    isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
-                  })
-                } else {
-                  likeCardServer(configApi, item["_id"])
-                    .then((res)=>{
-                      item.likes = res.likes;
-                      isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
-                    })
-                }
-              },
-              openPopupPicture, 
-              data.myId);
-  containerCard.prepend(card);
-    })
+      const card = createCard(
+        item,
+        () => {
+          handlerDeleteCard(item, card);
+        },
+        () => {
+          handlerFunctionLike(item, data, card);
+        },
+        openPopupPicture,
+        data.myId
+      );
+      containerCard.prepend(card);
+    });
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
 }
@@ -150,36 +141,45 @@ const prof = dataGetProfile(configApi);
 Promise.all([prof, all])
   .then((res) => {
     const arrayCard = res[1];
-    const dataProfile = {name: res[0]["name"], about: res[0]["about"]}
+    const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
     const myId = res[0]["_id"];
     return { arrayCard, dataProfile, myId };
   })
   .then((data) => {
     data.arrayCard.forEach((item) => {
-      const card = createCard(item, 
-        {delete: ()=>{
-        deleteCardServer(configApi, item["_id"]);
-        deleteCard(card)
-      }}, 
-      ()=>{
-        if(checkLike(item.likes, data.myId)){
-        deleteLikeCardServer(configApi, item["_id"])
-          .then((res)=>{
-            item.likes = res.likes;
-            isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
-          })
-        } else {
-          likeCardServer(configApi, item["_id"])
-            .then((res)=>{
-              item.likes = res.likes;
-              isLikeCard(item, data.myId, card.querySelector('.card__like-button'))
-            })
-        }
-      },
+      const card = createCard(
+        item,
+        () => {
+          handlerDeleteCard(item, card);
+        },
+        () => {
+          handlerFunctionLike(item, data, card);
+        },
 
-      openPopupPicture, data.myId);
+        openPopupPicture,
+        data.myId
+      );
       containerCard.append(card);
     });
     profileName.textContent = data.dataProfile.name;
     profileDescription.textContent = data.dataProfile.about;
   });
+
+function handlerDeleteCard(item, card) {
+  deleteCardServer(configApi, item["_id"]);
+  deleteCard(card);
+}
+
+function handlerFunctionLike(item, data, card) {
+  if (checkLike(item.likes, data.myId)) {
+    deleteLikeCardServer(configApi, item["_id"]).then((res) => {
+      item.likes = res.likes;
+      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
+    });
+  } else {
+    likeCardServer(configApi, item["_id"]).then((res) => {
+      item.likes = res.likes;
+      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
+    });
+  }
+}

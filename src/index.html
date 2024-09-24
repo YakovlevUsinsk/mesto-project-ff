@@ -51,7 +51,7 @@
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Новое место</h3>
       <form class="popup__form" name="new-place" novalidate>
-        <input id="place-name" pattern="[a-zа-яё\d\-\s]+" data-error-message="Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы." minlength="2" maxlength="30" type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
+        <input id="place-name" pattern="[a-zA-ZА-Яа-яЁё\d\-\s]+" data-error-message="Поле может содержать только латинские и кириллические буквы, знаки дефиса и пробелы." minlength="2" maxlength="30" type="text" name="place-name" class="popup__input popup__input_type_card-name" placeholder="Название" required>
         <span class="place-name-error"></span>
         <input id="link" pattern="http[s]?:\/\/[\w.\/\-]+" data-error-message="В поле «Ссылка на картинку» должен быть URL" type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
         <span class="link-error"></span>

@@ -25,7 +25,7 @@ export function createCard(
   buttonLike.addEventListener("click", funcLike);
 
   if(myCardSearch(itemArr, myId)){
-    buttonDelete.addEventListener('click', funcDelete.delete);
+    buttonDelete.addEventListener('click', funcDelete);
   } else {
     buttonDelete.remove()
   }
