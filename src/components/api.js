@@ -1,17 +1,16 @@
+
 export function allCard(configApi) {
   return fetch(`${configApi.baseUrl}/cards`, {
     headers: configApi.headers,
-  }).then((res) => {
-    return res.json();
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function dataGetProfile(configApi) {
   return fetch(`${configApi.baseUrl}/users/me`, {
     headers: configApi.headers,
-  }).then((res) => {
-    return res.json();
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function editProfileServer(configApi, data) {
@@ -19,9 +18,8 @@ export function editProfileServer(configApi, data) {
     method: "PATCH",
     headers: configApi.headers,
     body: JSON.stringify(data),
-  }).then((res) => {
-    return res.json();
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function addCardServer(configApi, data) {
@@ -29,32 +27,37 @@ export function addCardServer(configApi, data) {
     method: "POST",
     headers: configApi.headers,
     body: JSON.stringify(data),
-  }).then((res) => {
-    return res.json();
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function deleteCardServer(configApi, idCard) {
   return fetch(`${configApi.baseUrl}/cards/${idCard}`, {
     method: "DELETE",
     headers: configApi.headers,
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function likeCardServer(configApi, idCard) {
   return fetch(`${configApi.baseUrl}/cards/likes/${idCard}`, {
     method: "PUT",
     headers: configApi.headers,
-  }).then((res) => {
-    return res.json();
-  });
+  })
+  .then(checkResolveStatus)
 }
 
 export function deleteLikeCardServer(configApi, idCard) {
   return fetch(`${configApi.baseUrl}/cards/likes/${idCard}`, {
     method: "DELETE",
     headers: configApi.headers,
-  }).then((res) => {
+  })
+  .then(checkResolveStatus)
+}
+
+function checkResolveStatus (res) {
+  if (res.ok) {
     return res.json();
-  });
+  }
+  return Promise.reject(`Ошибка: ${res.status}`);
 }

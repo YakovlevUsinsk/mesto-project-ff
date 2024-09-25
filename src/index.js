@@ -51,12 +51,20 @@ function openPopupPicture(data) {
 
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
+  messageResponse(popupEditProfile, false);
   const name = popupEditProfile["name"].value;
   const about = popupEditProfile["description"].value;
   const data = { name, about };
-  editProfileServer(configApi, data).then((res) => {
+  editProfileServer(configApi, data)
+  .then((res) => {
     profileName.textContent = res.name;
     profileDescription.textContent = res.about;
+  })
+  .catch((err)=>{
+    console.log(err)
+  })
+  .finally(() => {
+    messageResponse(popupEditProfile, true);
   });
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
@@ -64,6 +72,7 @@ function handleProfileFormSubmit(evt) {
 
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
+  messageResponse(formEditeImage, false);
   const itemCard = {};
   itemCard.name = formEditeImage["place-name"].value;
   itemCard.link = formEditeImage["link"].value;
@@ -81,16 +90,18 @@ function handleCardFormSubmit(evt) {
       const item = data.item;
       const card = createCard(
         item,
-        () => {
-          handlerDeleteCard(item, card);
-        },
-        () => {
-          handlerFunctionLike(item, data, card);
-        },
+        () => {handlerDeleteCard(item, card)},
+        () => {handlerFunctionLike(item, data, card)},
         openPopupPicture,
         data.myId
       );
       containerCard.prepend(card);
+    })
+    .catch((err)=>{
+      console.log(err)
+    })
+    .finally(() => {
+      messageResponse(formEditeImage, true);
     });
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
@@ -135,7 +146,8 @@ buttoEditeProfile.addEventListener("click", () => {
 // test js
 enabledValidation(configValidation);
 
-const all = allCard(configApi);
+const all = allCard(configApi)
+
 const prof = dataGetProfile(configApi);
 
 Promise.all([prof, all])
@@ -149,13 +161,8 @@ Promise.all([prof, all])
     data.arrayCard.forEach((item) => {
       const card = createCard(
         item,
-        () => {
-          handlerDeleteCard(item, card);
-        },
-        () => {
-          handlerFunctionLike(item, data, card);
-        },
-
+        () => {handlerDeleteCard(item, card)},
+        () => {handlerFunctionLike(item, data, card)},
         openPopupPicture,
         data.myId
       );
@@ -163,6 +170,9 @@ Promise.all([prof, all])
     });
     profileName.textContent = data.dataProfile.name;
     profileDescription.textContent = data.dataProfile.about;
+  })
+  .catch((err)=>{
+    console.log(err)
   });
 
 function handlerDeleteCard(item, card) {
@@ -181,5 +191,14 @@ function handlerFunctionLike(item, data, card) {
       item.likes = res.likes;
       isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
     });
+  }
+}
+
+function messageResponse (form, boolen) {
+  const button = form.querySelector('button[type="submit"]');
+  if(boolen){
+    button.textContent = "Сохранить"
+  } else {
+    button.textContent = "Сохранение..."
   }
 }
