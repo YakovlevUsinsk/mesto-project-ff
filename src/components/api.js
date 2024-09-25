@@ -55,6 +55,15 @@ export function deleteLikeCardServer(configApi, idCard) {
   .then(checkResolveStatus)
 }
 
+export function avatarEditServer (configApi, url) {
+  return fetch(`${configApi.baseUrl}/users/me/avatar`, {
+    method: 'PATCH',
+    headers: configApi.headers,
+    body: JSON.stringify(url)
+  })
+  .then(checkResolveStatus)
+}
+
 function checkResolveStatus (res) {
   if (res.ok) {
     return res.json();

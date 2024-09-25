@@ -1,5 +1,5 @@
 import "./pages/index.css";
-import { enabledValidation, clearValidation } from "./components/validation.js";
+import { enabledValidation, clearValidation, } from "./components/validation.js";
 import {
   allCard,
   dataGetProfile,
@@ -8,6 +8,7 @@ import {
   deleteCardServer,
   likeCardServer,
   deleteLikeCardServer,
+  avatarEditServer,
 } from "./components/api.js";
 import { configApi } from "./components/constant.js";
 import {
@@ -35,13 +36,42 @@ const popupImage = document.querySelector(".popup_type_image");
 const buttoEditeProfile = document.querySelector(".profile__edit-button");
 const popupImagePicture = popupImage.querySelector(".popup__image");
 const popupImageTitle = popupImage.querySelector(".popup__caption");
+const popupEditeAvatar = document.querySelector(".popup_type_avatar")
 const popupEditProf = document.querySelector(".popup_type_edit");
 const buttoAddCard = document.querySelector(".profile__add-button");
 const profileName = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const popupEditProfile = document.forms["edit-profile"];
 const formEditeImage = document.forms["new-place"];
+const forEditAvatar = document.forms["avatar"];
 const popupAdPicture = document.querySelector(".popup_type_new-card");
+const avatarImage = document.querySelector('.profile__image');
+
+avatarImage.addEventListener('click', ()=>{
+  clearValidation(forEditAvatar, configValidation);
+
+openPopup(popupEditeAvatar);
+})
+
+function handleAvatarFormSubmit (evt) {
+  evt.preventDefault();
+  messageResponse(popupEditeAvatar, false);
+  const avatarUrl = forEditAvatar["link"].value;
+const url = {avatar: avatarUrl}
+  avatarEditServer(configApi, url)
+  .then((res)=>{
+    avatarImage.src = res["avatar"];
+  })
+  .catch((err)=>{
+    console.log(res)
+  })
+  .finally(function(){
+    messageResponse(popupEditeAvatar, true);
+  })
+  evt.target.reset();
+  closePopup(document.querySelector(".popup_is-opened"));
+}
+
 
 function openPopupPicture(data) {
   popupImagePicture.src = data.src;
@@ -136,6 +166,8 @@ formEditeImage.addEventListener("submit", handleCardFormSubmit);
 
 popupEditProfile.addEventListener("submit", handleProfileFormSubmit);
 
+forEditAvatar.addEventListener('submit', handleAvatarFormSubmit)
+
 buttoEditeProfile.addEventListener("click", () => {
   popupEditProfile["name"].value = profileName.textContent;
   popupEditProfile["description"].value = profileDescription.textContent;
@@ -155,6 +187,7 @@ Promise.all([prof, all])
     const arrayCard = res[1];
     const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
     const myId = res[0]["_id"];
+    avatarImage.src= res[0]["avatar"];
     return { arrayCard, dataProfile, myId };
   })
   .then((data) => {
