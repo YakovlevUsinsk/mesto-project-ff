@@ -1,19 +1,26 @@
+const configApi = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-23',
+  headers: {
+    authorization: '524b66f3-5145-414f-bd77-15a854ae63ff',
+    'Content-Type': 'application/json'
+  },
+}
 
-export function allCard(configApi) {
+export function allCard() {
   return fetch(`${configApi.baseUrl}/cards`, {
     headers: configApi.headers,
   })
     .then(checkResolveStatus)
 }
 
-export function dataGetProfile(configApi) {
+export function dataGetProfile() {
   return fetch(`${configApi.baseUrl}/users/me`, {
     headers: configApi.headers,
   })
     .then(checkResolveStatus)
 }
 
-export function editProfileServer(configApi, data) {
+export function editProfileServer(data) {
   return fetch(`${configApi.baseUrl}/users/me`, {
     method: "PATCH",
     headers: configApi.headers,
@@ -22,7 +29,7 @@ export function editProfileServer(configApi, data) {
     .then(checkResolveStatus)
 }
 
-export function addCardServer(configApi, data) {
+export function addCardServer(data) {
   return fetch(`${configApi.baseUrl}/cards`, {
     method: "POST",
     headers: configApi.headers,
@@ -31,7 +38,7 @@ export function addCardServer(configApi, data) {
     .then(checkResolveStatus)
 }
 
-export function deleteCardServer(configApi, idCard) {
+export function deleteCardServer(idCard) {
   return fetch(`${configApi.baseUrl}/cards/${idCard}`, {
     method: "DELETE",
     headers: configApi.headers,
@@ -39,7 +46,7 @@ export function deleteCardServer(configApi, idCard) {
     .then(checkResolveStatus)
 }
 
-export function likeCardServer(configApi, idCard) {
+export function likeCardServer(idCard) {
   return fetch(`${configApi.baseUrl}/cards/likes/${idCard}`, {
     method: "PUT",
     headers: configApi.headers,
@@ -47,7 +54,7 @@ export function likeCardServer(configApi, idCard) {
     .then(checkResolveStatus)
 }
 
-export function deleteLikeCardServer(configApi, idCard) {
+export function deleteLikeCardServer(idCard) {
   return fetch(`${configApi.baseUrl}/cards/likes/${idCard}`, {
     method: "DELETE",
     headers: configApi.headers,

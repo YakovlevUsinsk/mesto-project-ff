@@ -10,7 +10,6 @@ import {
   deleteLikeCardServer,
   avatarEditServer,
 } from "./components/api.js";
-import { configApi } from "./components/constant.js";
 import {
   createCard,
   deleteCard,
@@ -49,18 +48,18 @@ const avatarImage = document.querySelector('.profile__image');
 const avatarButtonAddPopup = document.querySelector('.wrapper');
 
 function handlerDeleteCard(item, card) {
-  deleteCardServer(configApi, item["_id"]);
+  deleteCardServer(item["_id"]);
   deleteCard(card);
 }
 
 function handlerFunctionLike(item, data, card) {
   if (checkLike(item.likes, data.myId)) {
-    deleteLikeCardServer(configApi, item["_id"]).then((res) => {
+    deleteLikeCardServer(item["_id"]).then((res) => {
       item.likes = res.likes;
       isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
     });
   } else {
-    likeCardServer(configApi, item["_id"]).then((res) => {
+    likeCardServer(item["_id"]).then((res) => {
       item.likes = res.likes;
       isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
     });
@@ -82,7 +81,7 @@ function handleAvatarFormSubmit(evt) {
   messageResponse(popupEditeAvatar, false);
   const avatarUrl = formEditAvatar["link"].value;
   const url = { avatar: avatarUrl }
-  avatarEditServer(configApi, url)
+  avatarEditServer(url)
     .then((res) => {
       avatarImage.src = res["avatar"];
     })
@@ -109,7 +108,7 @@ function handleProfileFormSubmit(evt) {
   const name = popupEditProfile["name"].value;
   const about = popupEditProfile["description"].value;
   const data = { name, about };
-  editProfileServer(configApi, data)
+  editProfileServer(data)
     .then((res) => {
       profileName.textContent = res.name;
       profileDescription.textContent = res.about;
@@ -130,7 +129,7 @@ function handleCardFormSubmit(evt) {
   const itemCard = {};
   itemCard.name = formEditeImage["place-name"].value;
   itemCard.link = formEditeImage["link"].value;
-  const dataItemCard = addCardServer(configApi, itemCard);
+  const dataItemCard = addCardServer(itemCard);
 
   Promise.all([prof, dataItemCard])
     .then((res) => {
@@ -194,7 +193,7 @@ formEditAvatar.addEventListener('submit', handleAvatarFormSubmit)
 buttoEditeProfile.addEventListener("click", () => {
   popupEditProfile["name"].value = profileName.textContent;
   popupEditProfile["description"].value = profileDescription.textContent;
-  clearValidation(popupEditProf, configValidation);
+  // clearValidation(popupEditProf, configValidation);
   openPopup(popupEditProf);
 });
 
@@ -206,8 +205,8 @@ avatarButtonAddPopup.addEventListener('click', () => {
 // Подключение валидации
 enabledValidation(configValidation);
 
-const all = allCard(configApi)
-const prof = dataGetProfile(configApi);
+const all = allCard()
+const prof = dataGetProfile();
 
 Promise.all([prof, all])
   .then((res) => {
