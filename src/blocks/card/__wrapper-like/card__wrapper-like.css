@@ -1,6 +1,8 @@
 .card__wrapper-like {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   row-gap: 3px;
+  min-block-size: 37px;
 }

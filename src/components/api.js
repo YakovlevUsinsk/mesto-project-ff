@@ -3,14 +3,14 @@ export function allCard(configApi) {
   return fetch(`${configApi.baseUrl}/cards`, {
     headers: configApi.headers,
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function dataGetProfile(configApi) {
   return fetch(`${configApi.baseUrl}/users/me`, {
     headers: configApi.headers,
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function editProfileServer(configApi, data) {
@@ -19,7 +19,7 @@ export function editProfileServer(configApi, data) {
     headers: configApi.headers,
     body: JSON.stringify(data),
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function addCardServer(configApi, data) {
@@ -28,7 +28,7 @@ export function addCardServer(configApi, data) {
     headers: configApi.headers,
     body: JSON.stringify(data),
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function deleteCardServer(configApi, idCard) {
@@ -36,7 +36,7 @@ export function deleteCardServer(configApi, idCard) {
     method: "DELETE",
     headers: configApi.headers,
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function likeCardServer(configApi, idCard) {
@@ -44,7 +44,7 @@ export function likeCardServer(configApi, idCard) {
     method: "PUT",
     headers: configApi.headers,
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
 export function deleteLikeCardServer(configApi, idCard) {
@@ -52,19 +52,19 @@ export function deleteLikeCardServer(configApi, idCard) {
     method: "DELETE",
     headers: configApi.headers,
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
-export function avatarEditServer (configApi, url) {
+export function avatarEditServer(configApi, url) {
   return fetch(`${configApi.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: configApi.headers,
     body: JSON.stringify(url)
   })
-  .then(checkResolveStatus)
+    .then(checkResolveStatus)
 }
 
-function checkResolveStatus (res) {
+function checkResolveStatus(res) {
   if (res.ok) {
     return res.json();
   }

@@ -43,32 +43,55 @@ const profileName = document.querySelector(".profile__title");
 const profileDescription = document.querySelector(".profile__description");
 const popupEditProfile = document.forms["edit-profile"];
 const formEditeImage = document.forms["new-place"];
-const forEditAvatar = document.forms["avatar"];
+const formEditAvatar = document.forms["avatar"];
 const popupAdPicture = document.querySelector(".popup_type_new-card");
 const avatarImage = document.querySelector('.profile__image');
 const avatarButtonAddPopup = document.querySelector('.wrapper');
 
-avatarButtonAddPopup.addEventListener('click', ()=>{
-  clearValidation(forEditAvatar, configValidation);
+function handlerDeleteCard(item, card) {
+  deleteCardServer(configApi, item["_id"]);
+  deleteCard(card);
+}
 
-openPopup(popupEditeAvatar);
-})
+function handlerFunctionLike(item, data, card) {
+  if (checkLike(item.likes, data.myId)) {
+    deleteLikeCardServer(configApi, item["_id"]).then((res) => {
+      item.likes = res.likes;
+      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
+    });
+  } else {
+    likeCardServer(configApi, item["_id"]).then((res) => {
+      item.likes = res.likes;
+      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
+    });
+  }
+}
 
-function handleAvatarFormSubmit (evt) {
+function messageResponse(form, boolen) {
+  const button = form.querySelector('button[type="submit"]');
+  if (boolen) {
+    button.textContent = "Сохранить"
+  } else {
+    button.textContent = "Сохранение..."
+  }
+}
+
+
+function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
   messageResponse(popupEditeAvatar, false);
-  const avatarUrl = forEditAvatar["link"].value;
-const url = {avatar: avatarUrl}
+  const avatarUrl = formEditAvatar["link"].value;
+  const url = { avatar: avatarUrl }
   avatarEditServer(configApi, url)
-  .then((res)=>{
-    avatarImage.src = res["avatar"];
-  })
-  .catch((err)=>{
-    console.log(res)
-  })
-  .finally(function(){
-    messageResponse(popupEditeAvatar, true);
-  })
+    .then((res) => {
+      avatarImage.src = res["avatar"];
+    })
+    .catch((err) => {
+      console.log(res)
+    })
+    .finally(function () {
+      messageResponse(popupEditeAvatar, true);
+    })
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
 }
@@ -87,16 +110,16 @@ function handleProfileFormSubmit(evt) {
   const about = popupEditProfile["description"].value;
   const data = { name, about };
   editProfileServer(configApi, data)
-  .then((res) => {
-    profileName.textContent = res.name;
-    profileDescription.textContent = res.about;
-  })
-  .catch((err)=>{
-    console.log(err)
-  })
-  .finally(() => {
-    messageResponse(popupEditProfile, true);
-  });
+    .then((res) => {
+      profileName.textContent = res.name;
+      profileDescription.textContent = res.about;
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+    .finally(() => {
+      messageResponse(popupEditProfile, true);
+    });
   evt.target.reset();
   closePopup(document.querySelector(".popup_is-opened"));
 }
@@ -107,7 +130,6 @@ function handleCardFormSubmit(evt) {
   const itemCard = {};
   itemCard.name = formEditeImage["place-name"].value;
   itemCard.link = formEditeImage["link"].value;
-  //
   const dataItemCard = addCardServer(configApi, itemCard);
 
   Promise.all([prof, dataItemCard])
@@ -121,14 +143,14 @@ function handleCardFormSubmit(evt) {
       const item = data.item;
       const card = createCard(
         item,
-        () => {handlerDeleteCard(item, card)},
-        () => {handlerFunctionLike(item, data, card)},
+        () => { handlerDeleteCard(item, card) },
+        () => { handlerFunctionLike(item, data, card) },
         openPopupPicture,
         data.myId
       );
       containerCard.prepend(card);
     })
-    .catch((err)=>{
+    .catch((err) => {
       console.log(err)
     })
     .finally(() => {
@@ -167,20 +189,24 @@ formEditeImage.addEventListener("submit", handleCardFormSubmit);
 
 popupEditProfile.addEventListener("submit", handleProfileFormSubmit);
 
-forEditAvatar.addEventListener('submit', handleAvatarFormSubmit)
+formEditAvatar.addEventListener('submit', handleAvatarFormSubmit)
 
 buttoEditeProfile.addEventListener("click", () => {
   popupEditProfile["name"].value = profileName.textContent;
   popupEditProfile["description"].value = profileDescription.textContent;
   clearValidation(popupEditProf, configValidation);
-
   openPopup(popupEditProf);
 });
-// test js
+
+avatarButtonAddPopup.addEventListener('click', () => {
+  clearValidation(formEditAvatar, configValidation);
+  openPopup(popupEditeAvatar);
+})
+
+// Подключение валидации
 enabledValidation(configValidation);
 
 const all = allCard(configApi)
-
 const prof = dataGetProfile(configApi);
 
 Promise.all([prof, all])
@@ -188,15 +214,15 @@ Promise.all([prof, all])
     const arrayCard = res[1];
     const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
     const myId = res[0]["_id"];
-    avatarImage.src= res[0]["avatar"];
+    avatarImage.src = res[0]["avatar"];
     return { arrayCard, dataProfile, myId };
   })
   .then((data) => {
     data.arrayCard.forEach((item) => {
       const card = createCard(
         item,
-        () => {handlerDeleteCard(item, card)},
-        () => {handlerFunctionLike(item, data, card)},
+        () => { handlerDeleteCard(item, card) },
+        () => { handlerFunctionLike(item, data, card) },
         openPopupPicture,
         data.myId
       );
@@ -205,34 +231,6 @@ Promise.all([prof, all])
     profileName.textContent = data.dataProfile.name;
     profileDescription.textContent = data.dataProfile.about;
   })
-  .catch((err)=>{
+  .catch((err) => {
     console.log(err)
   });
-
-function handlerDeleteCard(item, card) {
-  deleteCardServer(configApi, item["_id"]);
-  deleteCard(card);
-}
-
-function handlerFunctionLike(item, data, card) {
-  if (checkLike(item.likes, data.myId)) {
-    deleteLikeCardServer(configApi, item["_id"]).then((res) => {
-      item.likes = res.likes;
-      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
-    });
-  } else {
-    likeCardServer(configApi, item["_id"]).then((res) => {
-      item.likes = res.likes;
-      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
-    });
-  }
-}
-
-function messageResponse (form, boolen) {
-  const button = form.querySelector('button[type="submit"]');
-  if(boolen){
-    button.textContent = "Сохранить"
-  } else {
-    button.textContent = "Сохранение..."
-  }
-}
