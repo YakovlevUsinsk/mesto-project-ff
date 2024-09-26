@@ -24,7 +24,7 @@ export function createCard(
   
   buttonLike.addEventListener("click", funcLike);
 
-  if(myCardSearch(itemArr, myId)){
+  if(checkCardOwner(itemArr, myId)){
     buttonDelete.addEventListener('click', funcDelete);
   } else {
     buttonDelete.remove()
@@ -37,7 +37,7 @@ export function deleteCard(element) {
   element.remove();
 }
 
-function myCardSearch(data, myId){
+function checkCardOwner(data, myId){
   if(data["owner"]["_id"] === myId){
     return true
   } else {
@@ -45,7 +45,7 @@ function myCardSearch(data, myId){
   }
 }
 
-function funcCountLike (arrLike, element) {
+function countLike (arrLike, element) {
   if(!(arrLike.length === 0)){
   element.textContent = arrLike.length
   } else {
@@ -54,7 +54,7 @@ function funcCountLike (arrLike, element) {
 }
 
 export function isLikeCard (item, myId, element) {
-  funcCountLike(item.likes, element.parentElement.querySelector('.card__counter-like'))
+  countLike(item.likes, element.parentElement.querySelector('.card__counter-like'))
   if(checkLike(item.likes, myId)){
     element.classList.add('card__like-button_is-active');
   } else {
