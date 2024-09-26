@@ -46,8 +46,9 @@ const formEditeImage = document.forms["new-place"];
 const forEditAvatar = document.forms["avatar"];
 const popupAdPicture = document.querySelector(".popup_type_new-card");
 const avatarImage = document.querySelector('.profile__image');
+const avatarButtonAddPopup = document.querySelector('.wrapper');
 
-avatarImage.addEventListener('click', ()=>{
+avatarButtonAddPopup.addEventListener('click', ()=>{
   clearValidation(forEditAvatar, configValidation);
 
 openPopup(popupEditeAvatar);
