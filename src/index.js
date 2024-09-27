@@ -10,6 +10,7 @@ import {
   deleteLikeCardServer,
   avatarEditServer,
 } from "./components/api.js";
+import renderLoading from "./components/utils.js";
 import {
   createCard,
   deleteCard,
@@ -47,64 +48,71 @@ const popupAdPicture = document.querySelector(".popup_type_new-card");
 const avatarImage = document.querySelector('.profile__image');
 const avatarButtonAddPopup = document.querySelector('.wrapper');
 
-function handlerDeleteCard(item, card) {
-  deleteCardServer(item["_id"]);
-  deleteCard(card);
+function handlerDeleteCard(item, element) {
+  deleteCardServer(item["_id"])
+  .then(()=>{
+    deleteCard(element);
+  })
+  .catch((res)=>{
+    console.log(res)
+  })
+  .finally(()=>{
+  })
+
 }
 
-function handlerFunctionLike(item, data, card) {
-  if (checkLike(item.likes, data.myId)) {
-    deleteLikeCardServer(item["_id"]).then((res) => {
+function handlerFunctionLike(item, idUser, card) {
+  if (checkLike(item.likes, idUser)) {
+    deleteLikeCardServer(item["_id"])
+    .then((res) => {
       item.likes = res.likes;
-      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
-    });
+      isLikeCard(item, idUser, card.querySelector(".card__like-button"));
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+    .finally(()=>{});
   } else {
     likeCardServer(item["_id"]).then((res) => {
       item.likes = res.likes;
-      isLikeCard(item, data.myId, card.querySelector(".card__like-button"));
-    });
+      isLikeCard(item, idUser, card.querySelector(".card__like-button"));
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+    .finally(()=>{});
   }
 }
-
-function messageResponse(form, boolen) {
-  const button = form.querySelector('button[type="submit"]');
-  if (boolen) {
-    button.textContent = "Сохранить"
-  } else {
-    button.textContent = "Сохранение..."
-  }
-}
-
 
 function handleAvatarFormSubmit(evt) {
   evt.preventDefault();
-  messageResponse(popupEditeAvatar, false);
-  const avatarUrl = formEditAvatar["link"].value;
+  renderLoading(popupEditeAvatar, false);
+  const avatarUrl = formEditAvatar["link-avatar"].value;
   const url = { avatar: avatarUrl }
   avatarEditServer(url)
     .then((res) => {
       avatarImage.src = res["avatar"];
+      closePopup(popupEditeAvatar);
     })
     .catch((err) => {
       console.log(res)
     })
     .finally(function () {
-      messageResponse(popupEditeAvatar, true);
+      renderLoading(popupEditeAvatar, true);
     })
-  evt.target.reset();
-  closePopup(document.querySelector(".popup_is-opened"));
 }
 
 
 function openPopupPicture(data) {
   popupImagePicture.src = data.src;
+  popupImagePicture.alt = data.alt;
   popupImageTitle.textContent = data.alt;
   openPopup(popupImage);
 }
 
 function handleProfileFormSubmit(evt) {
   evt.preventDefault();
-  messageResponse(popupEditProfile, false);
+  renderLoading(popupEditProfile, false);
   const name = popupEditProfile["name"].value;
   const about = popupEditProfile["description"].value;
   const data = { name, about };
@@ -112,51 +120,43 @@ function handleProfileFormSubmit(evt) {
     .then((res) => {
       profileName.textContent = res.name;
       profileDescription.textContent = res.about;
+      closePopup(popupEditProf);
     })
     .catch((err) => {
       console.log(err)
     })
     .finally(() => {
-      messageResponse(popupEditProfile, true);
+      renderLoading(popupEditProfile, true);
     });
-  evt.target.reset();
-  closePopup(document.querySelector(".popup_is-opened"));
 }
 
 function handleCardFormSubmit(evt) {
   evt.preventDefault();
-  messageResponse(formEditeImage, false);
+  renderLoading(formEditeImage, false);
   const itemCard = {};
   itemCard.name = formEditeImage["place-name"].value;
   itemCard.link = formEditeImage["link"].value;
-  const dataItemCard = addCardServer(itemCard);
-
-  Promise.all([prof, dataItemCard])
-    .then((res) => {
-      const item = res[1];
-      const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
-      const myId = res[0]["_id"];
-      return { item, dataProfile, myId };
-    })
+  addCardServer(itemCard)
     .then((data) => {
-      const item = data.item;
       const card = createCard(
-        item,
-        () => { handlerDeleteCard(item, card) },
-        () => { handlerFunctionLike(item, data, card) },
+        data,
+        () => { handlerDeleteCard(data, card) },
+        () => { handlerFunctionLike(data, myId, card) },
         openPopupPicture,
-        data.myId
+        myId
       );
       containerCard.prepend(card);
+      closePopup(popupAdPicture);
+      formEditeImage.reset();
+      clearValidation(popupAdPicture, configValidation);
     })
     .catch((err) => {
       console.log(err)
     })
     .finally(() => {
-      messageResponse(formEditeImage, true);
+      renderLoading(formEditeImage, true);
     });
-  evt.target.reset();
-  closePopup(document.querySelector(".popup_is-opened"));
+
 }
 
 buttoAddCard.addEventListener("click", () => {
@@ -205,25 +205,26 @@ avatarButtonAddPopup.addEventListener('click', () => {
 // Подключение валидации
 enabledValidation(configValidation);
 
-const all = allCard()
-const prof = dataGetProfile();
+const getInitialCardsPromise = allCard()
+const getUserInfoPromise = dataGetProfile();
+let myId = null;
 
-Promise.all([prof, all])
+Promise.all([getUserInfoPromise, getInitialCardsPromise])
   .then((res) => {
     const arrayCard = res[1];
     const dataProfile = { name: res[0]["name"], about: res[0]["about"] };
-    const myId = res[0]["_id"];
+    myId = res[0]["_id"];
     avatarImage.src = res[0]["avatar"];
-    return { arrayCard, dataProfile, myId };
+    return { arrayCard, dataProfile};
   })
   .then((data) => {
     data.arrayCard.forEach((item) => {
       const card = createCard(
         item,
         () => { handlerDeleteCard(item, card) },
-        () => { handlerFunctionLike(item, data, card) },
+        () => { handlerFunctionLike(item, myId, card) },
         openPopupPicture,
-        data.myId
+        myId
       );
       containerCard.append(card);
     });

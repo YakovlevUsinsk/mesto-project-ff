@@ -7,6 +7,7 @@ function showInputError(input, errorMessage, inputErrorClass, errorClass) {
 
 function hidenInputError(input, inputErrorClass, errorClass) {
   input.classList.remove(inputErrorClass);
+  input.setCustomValidity("");
   const spanElement = document.querySelector(`.${input.id}-error`);
   spanElement.classList.remove(errorClass);
   spanElement.textContent = ''

@@ -62,7 +62,7 @@ export function deleteLikeCardServer(idCard) {
     .then(checkResolveStatus)
 }
 
-export function avatarEditServer(configApi, url) {
+export function avatarEditServer(url) {
   return fetch(`${configApi.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
     headers: configApi.headers,
